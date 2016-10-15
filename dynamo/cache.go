@@ -12,6 +12,7 @@ import (
 // Cache is the struct that handle all the data storage for the dynamo server.
 type Cache struct {
     data map[string]string
+    timeStamp map[string]int64
     sync.Mutex
 }
 
@@ -20,7 +21,7 @@ func NewCache() *Cache {
     var s Cache
 
     s.data = make(map[string]string)
-
+    s.timeStamp = make(map[string]int64)
     return &s
 }
 
@@ -29,11 +30,11 @@ func NewCache() *Cache {
 func (cache *Cache) Get(key string) (value string, timestamp int64) {
     cache.Lock()
     value = cache.data[key]
-    timestamp = 0
+    timestamp = cache.timeStamp[key]
     cache.Unlock()
 
     log.Printf("[CACHE] Getting Key '%v' with Value '%v' @ timestamp '%v'\n", key, value, timestamp)
-    return
+    return value, timestamp
 }
 
 // Put a value to a key in the storage. This will handle concurrent put
@@ -43,6 +44,7 @@ func (cache *Cache) Put(key string, value string, timestamp int64) {
 
     cache.Lock()
     cache.data[key] = value
+    cache.timeStamp[key] = timestamp
     cache.Unlock()
 
     return
@@ -52,6 +54,6 @@ func (cache *Cache) Put(key string, value string, timestamp int64) {
 // except for testing purposes.
 func (cache *Cache) getAll() (data map[string]string, timestamps map[string]int64) {
     data = cache.data
-    timestamps = make(map[string]int64)
+    timestamps = cache.timeStamp
     return data, timestamps
 }

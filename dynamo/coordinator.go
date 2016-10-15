@@ -189,10 +189,19 @@ func aggregateVotes(votes []*vote) (result string) {
 	for _, vote := range votes {
 		log.Printf("[COORDINATOR] Vote: %v\n", vote.value)
 	}
-
+	var index int
+	var maxTimeStamp int64
+	maxTimeStamp = 0
 	/////////////////////////
 	// YOUR CODE GOES HERE //
 	/////////////////////////
-	result = votes[0].value
+	//We want to return the vote with highest timeStamp
+	for i, vote := range votes {
+		if vote.timestamp > maxTimeStamp{
+			maxTimeStamp = vote.timestamp
+			index = i
+		}
+	}
+	result = votes[index].value
 	return
 }
