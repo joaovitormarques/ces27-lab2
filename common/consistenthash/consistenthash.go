@@ -21,16 +21,19 @@ func (r *Ring) search(key string) int {
     /////////////////////////
     // YOUR CODE GOES HERE //
     /////////////////////////
-    hashvalue := int(hashId(key))
-    //var k int
-    for k := hashvalue; k<1000; k++{
-        for i, node := range r.Nodes {
-            if node.HashId == uint32(k) {
-                return i
-            }
+    hashvalue := hashId(key)
+    var minimumHash uint32
+    minimumHash = 1001
+    index := 0
+    //Search for the node with the smallest hash that yet is greater than the key's hash
+    for i, node := range r.Nodes {
+        if node.HashId < minimumHash && node.HashId > hashvalue {
+            index = i
+            minimumHash = node.HashId
         }
     }
-    return 0
+
+    return index
 }
 // NewRing will create a new Ring object and return a pointer to it.
 func NewRing() *Ring {
